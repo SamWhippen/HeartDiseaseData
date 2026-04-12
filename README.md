@@ -36,5 +36,5 @@ and without CHD.
 
 # Team Members and Roles
 # Version Control Workflow 
-# Summary of Results:
+# Summary of Results
 # Concluding/Additional Remarks and Notes
