@@ -1,6 +1,7 @@
 # HeartDiseaseData
 
-In this repository we will examine data from sample of males in a heart-disease high-risk region of the Western Cape, South Africa.
+In this repository we will examine data from a sample of males in a high-risk
+heart-disease region of the Western Cape, South Africa.
 
 # Project Purpose
 
@@ -33,7 +34,7 @@ contains both CHD cases and controls, with approximately twice as many controls
 as cases, and is used to compare risk factor distributions between those with
 and without CHD.
 
-# Team Members and Roles: 
-# Version Control Workflow: 
-# Summary of Results: 
-# Concluding/Additional Remarks and Notes: 
+# Team Members and Roles
+# Version Control Workflow 
+# Summary of Results:
+# Concluding/Additional Remarks and Notes
