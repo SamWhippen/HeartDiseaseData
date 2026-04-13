@@ -1,52 +1,56 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    https://shiny.posit.co/
-#
-
-####
 library(shiny)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
+# Load data
+heart <- read.csv("HeartDiseaseData.csv")
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
+# Change family history data to numerical data
+heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
+# Make CHD labels nicer
+heart$chd <- factor(heart$chd,
+                    levels = c(0, 1),
+                    labels = c("No CHD", "CHD"))
 
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
+# Named variables to be more appealing and clear
+var_choices <- c(
+  "Age" = "age",
+  "Family History of CHD" = "famhist",
+  "Type A Behaviors" = "typea",
+  "Tobacco" = "tobacco",
+  "LDL Cholesterol" = "ldl",
+  "Adiposity" = "adiposity",
+  "Obesity" = "obesity",
+  "Alcohol" = "alcohol",
+  "Systolic Blood Pressure" = "sbp"
 )
 
-# Define server logic required to draw a histogram
+ui <- fluidPage(
+  
+  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease"),
+  
+  sidebarLayout(
+    
+    sidebarPanel(
+      
+      checkboxGroupInput("variables",
+                         "Select Risk Factors:",
+                         choices = var_choices)
+      
+    ),
+    
+    mainPanel(
+      
+      plotOutput("plot")
+      
+    )
+  )
+)
+
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+  
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
