@@ -28,26 +28,13 @@ var_choices <- c(
 )
 
 ui <- fluidPage(
-  
   titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease"),
-  
   sidebarLayout(
-    
     sidebarPanel(
-      
       checkboxGroupInput("variables",
                          "Select Risk Factors:",
-                         choices = var_choices)
-      
-    ),
-    
-    mainPanel(
-      
-      plotOutput("plot")
-      
-    )
-  )
-)
+                         choices = var_choices)),
+    mainPanel(plotOutput("plot"))))
 
 server <- function(input, output) {
   

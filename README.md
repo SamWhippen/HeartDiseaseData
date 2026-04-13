@@ -36,6 +36,21 @@ and without CHD.
 
 # Team Members and Roles
 
+- Minna Hudhud - Server (plots or summary statistics)
+- Richard Lazarowich - Server (plots or summary statistics)
+- Samantha Whippen - UI
+
 # Version Control Workflow 
+
+1. Sam created a repository in GitHub and invited Minna and Richard to be
+collaborators.
+2. Sam created the README file and converted the CHD raw data into a CSV file
+and committed those to the GitHub repository.
+3. Sam created a shiny app file and made a basic UI design created with the
+intention of allowing the user to click check boxes next to the different
+cardiovascular variables with the goal of showing summary statistics and plots of the various
+those variables in relation to CHD prevalence.
+
 # Summary of Results
+
 # Concluding/Additional Remarks and Notes
