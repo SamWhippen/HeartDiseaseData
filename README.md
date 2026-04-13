@@ -35,6 +35,7 @@ as cases, and is used to compare risk factor distributions between those with
 and without CHD.
 
 # Team Members and Roles
+
 # Version Control Workflow 
 # Summary of Results
 # Concluding/Additional Remarks and Notes
