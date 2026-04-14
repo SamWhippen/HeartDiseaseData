@@ -37,7 +37,35 @@ ui <- fluidPage(
     mainPanel(plotOutput("plot"))))
 
 server <- function(input, output) {
-  
+  output$plot <- renderPlot({
+    #Require at least one variable to be selected
+    req(input$variables)
+    
+    #Pivot from wide to long format for plotting
+    heart_long <- heart %>%
+      select(chd, all_of(input$variables)) %>%
+      pivot_longer(cols = -chd, 
+                   names_to = "variable",
+                   values_to = "value") %>%
+      mutate(variable = factor(variable,
+                               levels = input$variables,
+                               labels = names(var_choices)[var_choices %in% input$variables]))
+    
+    #Creating visualization boxplot
+    ggplot(heart_long, aes(x = chd, y = value, fill = chd)) +
+      geom_boxplot() +
+      facet_wrap(~ variable, scales = "free_y", ncol = 3) +
+      scale_fill_manual(values = c("No CHD" = "green", 
+                                   "CHD" = "red")) +
+      labs(x = NULL,
+           y = "Value", 
+           fill = "CHD Status"
+      ) + 
+      theme_minimal(base_size = 14) + 
+      theme(strip.text = element_text(face = "bold"),
+            legend.position = "bottom",
+            panel.grid.minor = element_blank()
+      )
+  })
 }
-
 shinyApp(ui = ui, server = server)
