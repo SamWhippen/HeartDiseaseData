@@ -36,8 +36,8 @@ and without CHD.
 
 # Team Members and Roles
 
-- Minna Hudhud - Server (plots or summary statistics)
-- Richard Lazarowich - Server (plots or summary statistics)
+- Minna Hudhud - Server (plots) 
+- Richard Lazarowich - Server (summary statistics)
 - Samantha Whippen - UI
 
 # Version Control Workflow 
@@ -50,6 +50,7 @@ and committed those to the GitHub repository.
 intention of allowing the user to click check boxes next to the different
 cardiovascular variables with the goal of showing summary statistics and plots of the various
 those variables in relation to CHD prevalence.
+4. Minna added code to the server to display plots for any combination of variables. 
 
 # Summary of Results
 
