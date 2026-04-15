@@ -34,13 +34,43 @@ ui <- fluidPage(
       checkboxGroupInput("variables",
                          "Select Risk Factors:",
                          choices = var_choices)),
-    mainPanel(plotOutput("plot"))))
+    mainPanel(
+      plotOutput("plot"),
+      verbatimTextOutput("summary_stats"),
+      verbatimTextOutput("chd_compare")
+    )))
 
 server <- function(input, output) {
   output$plot <- renderPlot({
     #Require at least one variable to be selected
     req(input$variables)
+    #Outputs summary statistics
+  output$summary_stats <- renderPrint({
+      
+      req(input$variables)
+      
+      heart %>%
+        select(all_of(input$variables)) %>%
+        summary()
+      
+    }) 
+  #Outputs CHD/non-CHD comparison  
+  output$chd_compare <- renderPrint({
+    # requires a selection of at least one input
+    req(input$variables)
     
+    heart %>%
+      group_by(chd) %>%
+      summarise(
+        Age = mean(age, na.rm = TRUE),
+        Tobacco = mean(tobacco, na.rm = TRUE),
+        LDL = mean(ldl, na.rm = TRUE),
+        Adiposity = mean(adiposity, na.rm = TRUE),
+        Alcohol = mean(alcohol, na.rm = TRUE),
+        SBP = mean(sbp, na.rm = TRUE)
+      )
+    
+  })
     #Pivot from wide to long format for plotting
     heart_long <- heart %>%
       select(chd, all_of(input$variables)) %>%
