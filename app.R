@@ -37,10 +37,22 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("plot"),
       verbatimTextOutput("summary_stats"),
-      verbatimTextOutput("chd_compare")
+      verbatimTextOutput("chd_compare"),
+      verbatimTextOutput("regression")
     )))
 
 server <- function(input, output) {
+  #regression model
+  model <- reactive({
+    
+    req(input$variables)
+    
+    glm(chd ~ age + tobacco + ldl + obesity,
+        data = heart,
+        family = binomial)
+    
+  })
+  
   output$plot <- renderPlot({
     #Require at least one variable to be selected
     req(input$variables)
@@ -71,7 +83,14 @@ server <- function(input, output) {
       )
     
   })
-    #Pivot from wide to long format for plotting
+    
+  output$regression <- renderPrint({
+    req(input$variables)
+    summary(model())
+    
+  })
+  
+  #Pivot from wide to long format for plotting
     heart_long <- heart %>%
       select(chd, all_of(input$variables)) %>%
       pivot_longer(cols = -chd, 
