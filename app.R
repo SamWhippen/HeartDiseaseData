@@ -37,6 +37,8 @@ ui <- fluidPage(
   
   titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease"),
   
+  helpText("This app explores how key cardiovascular risk factors relate to coronary heart disease (CHD). Select variables to compare distributions, summary statistics, and model based effects across CHD status."),
+  
   sidebarLayout(
     sidebarPanel(
       width = 3,
@@ -47,6 +49,22 @@ ui <- fluidPage(
                          "Select Risk Factors:",
                          choices = var_choices,
                          selected = c("age", "ldl")
+      ),
+      
+      card(
+        card_header("Variable Descriptions"),
+        HTML("
+          <b>Age:</b> Age of the individual in years.
+          <b>LDL Cholesterol:</b> Low density lipoprotein cholesterol level, often referred to as 'bad' cholesterol.
+          <b>Adiposity:</b> A measure of body fat distribution.
+          <b>Obesity:</b> Body mass index.
+          <b>Systolic Blood Pressure (SBP):</b> Pressure in arteries during heartbeats.
+          <b>Tobacco:</b> Lifetime tobacco usage in kilograms.
+          <b>Alcohol:</b> Current alcohol consumption level.
+          <b>Type A Behaviors:</b> Measure of stress prone, competitive personality traits.
+          <b>Family History of CHD:</b> Whether close relatives have had coronary heart disease.
+          <b>CHD:</b> Presence or absence of coronary heart disease in the individual.
+        ")
       )
     ),
     
@@ -56,7 +74,8 @@ ui <- fluidPage(
       card(card_header("CHD Comparison"), tableOutput("chd_compare")),
       card(card_header("Regression Model"), tableOutput("regression"))
     )
-  ))
+  )
+)
 
 server <- function(input, output) {
   #regression model
@@ -80,22 +99,49 @@ server <- function(input, output) {
       pivot_longer(cols = -chd, 
                    names_to = "variable",
                    values_to = "value") %>%
-      mutate(variable = factor(variable,
-                               levels = input$variables,
-                               labels = names(var_choices)[var_choices %in% 
-                                                             input$variables]))
-    
+      mutate(
+        variable = factor(variable,
+                          levels = input$variables,
+                          labels = names(var_choices)[var_choices %in% 
+                                                        input$variables]),
+        value_cat = ifelse(variable == "Family History of CHD",
+                           ifelse(value == 1, "Present", "Absent"),
+                           NA)
+      )
     
     #Creating visualization boxplot
-    ggplot(heart_long, aes(x = chd, y = value, fill = chd)) +
-      geom_boxplot(alpha = 0.8, outlier.color = "black") +
+    ggplot() +
+      
+      # Boxplots for continuous variables
+      geom_boxplot(
+        data = heart_long %>% filter(variable != "Family History of CHD"),
+        aes(x = chd, y = value, fill = chd),
+        alpha = 0.8,
+        outlier.color = "black"
+      ) +
+      
+      # Proportional bar chart for famhist
+      geom_bar(
+        data = heart_long %>% filter(variable == "Family History of CHD"),
+        aes(x = chd, fill = value_cat),
+        position = "fill"
+      ) +
+      
       facet_wrap(~ variable, scales = "free_y", ncol = 3) +
-      scale_fill_manual(values = c("No CHD" = "green", 
-                                   "CHD" = "red")) +
+      
+      scale_fill_manual(
+        values = c(
+          "No CHD" = "green",
+          "CHD" = "red",
+          "Absent" = "green",
+          "Present" = "red"
+        ),
+        name = "Legend"
+      ) +
+      
       labs(x = NULL,
-           y = "Value", 
-           fill = "CHD Status"
-      ) + 
+           y = "Value") + 
+      
       theme_minimal(base_size = 14) + 
       theme(plot.title = element_text(face = "bold", size = 16),
             strip.text = element_text(face = "bold"),
@@ -134,7 +180,7 @@ server <- function(input, output) {
         SBP = round(mean(sbp, na.rm = TRUE), 2)
       )
   })
-
+  
   #regression
   output$regression <- renderTable({
     req(input$variables)
