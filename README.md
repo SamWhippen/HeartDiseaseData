@@ -53,7 +53,9 @@ those variables in relation to CHD prevalence.
 4. Minna added code to the server to display plots for any combination of variables.
 5. Richard added code to the server and UI to calculate and display summary statistics,
 CHD/non-CHD comparisons, and regression model.
-
+6. Minna made some UI changes to the summary statistics. 
+7. Sam added variable descriptions, app description, and changed the way the
+family history graph displays.
 
 # Summary of Results
 
