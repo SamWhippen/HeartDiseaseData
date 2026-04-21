@@ -35,7 +35,8 @@ ui <- fluidPage(
     primary = "#2C7BE5"
   ),
   
-  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease"),
+  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
+             Heart Disease"),
   
   sidebarLayout(
     sidebarPanel(
@@ -143,9 +144,11 @@ server <- function(input, output) {
     coef_table <- as.data.frame(m$coefficients)
     coef_table$Variable <- rownames(coef_table)
     
-    colnames(coef_table) <- c("Estimate", "Std Error", "z value", "p value", "Variable")
+    colnames(coef_table) <- c("Estimate", "Std Error", "z value", "p value", 
+                              "Variable")
     
-    coef_table <- coef_table[, c("Variable", "Estimate", "Std Error", "z value", "p value")]
+    coef_table <- coef_table[, c("Variable", "Estimate", "Std Error", "z value", 
+                                 "p value")]
     coef_table$Odds_Ratio <- round(exp(coef_table$Estimate), 3)
     coef_table
   })
