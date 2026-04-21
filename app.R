@@ -25,16 +25,15 @@ var_choices <- c(
   "Obesity" = "obesity",
   "Systolic Blood Pressure" = "sbp",
   "Tobacco" = "tobacco",
-  "Type A Behaviors" = "typea"
-)
+  "Type A Behaviors" = "typea")
 
 ui <- fluidPage(
   theme = bs_theme(
     version = 5,
     bootswatch = "flatly",
-    primary = "#2C7BE5"
-  ),
+    primary = "black"),
   
+  # Formatting of title, sidebars, and main panels
   tags$head(
     tags$style(HTML("
       .container-fluid {
@@ -47,13 +46,11 @@ ui <- fluidPage(
         text-align: center;
         width: 100%;
       }
-    "))
-  ),
+    "))),
   
   titlePanel(
     div(class = "title-center",
-        "Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease")
-  ),
+        "Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease")),
   
   helpText("This app explores how key cardiovascular risk factors relate to coronary heart disease (CHD). Select variables to compare distributions, summary statistics, and model based effects across CHD status."),
   
@@ -66,8 +63,7 @@ ui <- fluidPage(
       checkboxGroupInput("variables",
                          "Select Risk Factors:",
                          choices = var_choices,
-                         selected = c("age", "ldl")
-      ),
+                         selected = c("age", "ldl")),
       
       card(
         card_header("Variable Descriptions"),
@@ -81,10 +77,7 @@ ui <- fluidPage(
           <b>Alcohol:</b> Current alcohol consumption level.
           <b>Type A Behaviors:</b> Measure of stress prone, competitive personality traits.
           <b>Family History of CHD:</b> Whether close relatives have had coronary heart disease.
-          <b>CHD:</b> Presence or absence of coronary heart disease in the individual.
-        ")
-      )
-    ),
+          <b>CHD:</b> Presence or absence of coronary heart disease in the individual. "))),
     
     mainPanel(
       card(card_header("Plot"), plotOutput("plot")),
@@ -138,7 +131,7 @@ server <- function(input, output) {
         outlier.color = "black"
       ) +
       
-      # Proportional bar chart for famhist
+      # Proportional bar chart for family history 
       geom_bar(
         data = heart_long %>% filter(variable == "Family History of CHD"),
         aes(x = chd, fill = value_cat),
@@ -149,10 +142,10 @@ server <- function(input, output) {
       
       scale_fill_manual(
         values = c(
-          "No CHD" = "green",
-          "CHD" = "red",
-          "Absent" = "green",
-          "Present" = "red"
+          "No CHD" = "chartreuse3",
+          "CHD" = "tomato3",
+          "Absent" = "chartreuse3",
+          "Present" = "tomato3"
         ),
         name = "Legend"
       ) +
@@ -182,7 +175,7 @@ server <- function(input, output) {
       Max = sapply(data, max, na.rm = TRUE)
     )
   })
-  
+
   #CHD/no-CHD comparison
   output$chd_compare <- renderTable({
     req(input$variables)
@@ -193,7 +186,7 @@ server <- function(input, output) {
                        ~ round(mean(.x, na.rm = TRUE), 2))) %>%
       ungroup()
   })
-  
+
   #regression
   output$regression <- renderTable({
     req(input$variables)
