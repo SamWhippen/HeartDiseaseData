@@ -35,7 +35,25 @@ ui <- fluidPage(
     primary = "#2C7BE5"
   ),
   
-  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease"),
+  tags$head(
+    tags$style(HTML("
+      .container-fluid {
+        max-width: 1200px;
+      }
+      .card {
+        margin-bottom: 12px;
+      }
+      .title-center {
+        text-align: center;
+        width: 100%;
+      }
+    "))
+  ),
+  
+  titlePanel(
+    div(class = "title-center",
+        "Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease")
+  ),
   
   helpText("This app explores how key cardiovascular risk factors relate to coronary heart disease (CHD). Select variables to compare distributions, summary statistics, and model based effects across CHD status."),
   
@@ -171,14 +189,9 @@ server <- function(input, output) {
     
     heart %>%
       group_by(chd) %>%
-      summarise(
-        Age = round(mean(age, na.rm = TRUE), 2),
-        Tobacco = round(mean(tobacco, na.rm = TRUE), 2),
-        LDL = round(mean(ldl, na.rm = TRUE), 2),
-        Adiposity = round(mean(adiposity, na.rm = TRUE), 2),
-        Alcohol = round(mean(alcohol, na.rm = TRUE), 2),
-        SBP = round(mean(sbp, na.rm = TRUE), 2)
-      )
+      summarise(across(all_of(input$variables),
+                       ~ round(mean(.x, na.rm = TRUE), 2))) %>%
+      ungroup()
   })
   
   #regression
