@@ -3,6 +3,7 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 library(bslib)
+library(rsconnect)
 
 # Load data
 heart <- read.csv("HeartDiseaseData.csv")
@@ -204,3 +205,5 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
+
+rsconnect::deployApp()
