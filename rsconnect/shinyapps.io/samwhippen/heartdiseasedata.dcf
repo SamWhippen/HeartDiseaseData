@@ -1,0 +1,10 @@
+name: heartdiseasedata
+title:
+username: samwhippen
+account: samwhippen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17194531
+bundleId: 11886292
+url: https://samwhippen.shinyapps.io/heartdiseasedata/
+version: 1
