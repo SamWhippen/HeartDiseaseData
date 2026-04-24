@@ -1,0 +1,10 @@
+name: HeartDiseaseData
+title: HeartDiseaseData
+username: hudhudm
+account: hudhudm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17126741
+bundleId: 11902916
+url: https://hudhudm.shinyapps.io/HeartDiseaseData/
+version: 1

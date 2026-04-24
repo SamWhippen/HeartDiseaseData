@@ -62,11 +62,8 @@ ui <- fluidPage(
   titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
              Heart Disease"),
   
-<<<<<<< HEAD
   titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
              Heart Disease"),
-=======
->>>>>>> b88efd7
   
   sidebarLayout(
     sidebarPanel(
