@@ -62,9 +62,6 @@ ui <- fluidPage(
   titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
              Heart Disease"),
   
-  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
-             Heart Disease"),
-  
   sidebarLayout(
     sidebarPanel(
       width = 3,
@@ -235,5 +232,3 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
-
-rsconnect::deployApp()
