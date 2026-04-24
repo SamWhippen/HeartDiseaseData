@@ -50,9 +50,17 @@ ui <- fluidPage(
   
   titlePanel(
     div(class = "title-center",
-        "Interactive Analysis of Cardiovascular Risk Factors and Coronary Heart Disease")),
+        "Interactive Analysis of Cardiovascular Risk Factors and Coronary 
+        Heart Disease")),
   
-  helpText("This app explores how key cardiovascular risk factors relate to coronary heart disease (CHD). Select variables to compare distributions, summary statistics, and model based effects across CHD status."),
+  helpText("This app explores how key cardiovascular risk factors relate to 
+           coronary heart disease (CHD). Select variables to compare 
+           distributions, summary statistics, and model based effects across 
+           CHD status."),
+
+  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
+             Heart Disease"),
+  
   
   sidebarLayout(
     sidebarPanel(
@@ -69,22 +77,34 @@ ui <- fluidPage(
         card_header("Variable Descriptions"),
         HTML("
           <b>Age:</b> Age of the individual in years.
-          <b>LDL Cholesterol:</b> Low density lipoprotein cholesterol level, often referred to as 'bad' cholesterol.
+          <b>LDL Cholesterol:</b> Low density lipoprotein cholesterol level, 
+          often referred to as 'bad' cholesterol.
           <b>Adiposity:</b> A measure of body fat distribution.
           <b>Obesity:</b> Body mass index.
-          <b>Systolic Blood Pressure (SBP):</b> Pressure in arteries during heartbeats.
+          <b>Systolic Blood Pressure (SBP):</b> Pressure in arteries during 
+          heartbeats.
           <b>Tobacco:</b> Lifetime tobacco usage in kilograms.
           <b>Alcohol:</b> Current alcohol consumption level.
-          <b>Type A Behaviors:</b> Measure of stress prone, competitive personality traits.
-          <b>Family History of CHD:</b> Whether close relatives have had coronary heart disease.
-          <b>CHD:</b> Presence or absence of coronary heart disease in the individual. "))),
+          <b>Type A Behaviors:</b> Measure of stress prone, competitive 
+          personality traits.
+          <b>Family History of CHD:</b> Whether close relatives have had 
+          coronary heart disease.
+          <b>CHD:</b> Presence or absence of coronary heart disease in the 
+          individual."))
+      ),
     
     mainPanel(
-      card(card_header("Plot"), plotOutput("plot")),
-      card(card_header("Summary Stats"), tableOutput("summary_stats")),
-      card(card_header("CHD Comparison"), tableOutput("chd_compare")),
-      card(card_header("Regression Model"), tableOutput("regression"))
-    )
+      tabsetPanel(
+        tabPanel("Plot",
+                 card(uiOutput("plot_facet"))),
+        tabPanel("Summary Stats",
+                 card(tableOutput("summary_stats"))),
+        tabPanel("CHD Comparison",
+                 card(tableOutput("chd_compare"))),
+        tabPanel("Regression Model",
+                 card(tableOutput("regression")))
+      )          
+    )        
   )
 )
 
@@ -100,10 +120,16 @@ server <- function(input, output) {
     
   })
   
-  output$plot <- renderPlot({
+  #making the faceted plot window height dynamic according to selected variables
+  output$plot_facet <- renderUI({
     #Require at least one variable to be selected
     req(input$variables)
+    plot_height <- pmax(400, length(input$variables) * 200)
+    plotOutput("plot", height = paste0(plot_height, "px"))
+  })
     
+  output$plot <- renderPlot({
+    req(input$variables)
     #Pivot from wide to long format for plotting
     heart_long <- heart %>%
       select(chd, all_of(input$variables)) %>%
@@ -195,9 +221,11 @@ server <- function(input, output) {
     coef_table <- as.data.frame(m$coefficients)
     coef_table$Variable <- rownames(coef_table)
     
-    colnames(coef_table) <- c("Estimate", "Std Error", "z value", "p value", "Variable")
+    colnames(coef_table) <- c("Estimate", "Std Error", "z value", "p value", 
+                              "Variable")
     
-    coef_table <- coef_table[, c("Variable", "Estimate", "Std Error", "z value", "p value")]
+    coef_table <- coef_table[, c("Variable", "Estimate", "Std Error", "z value", 
+                                 "p value")]
     coef_table$Odds_Ratio <- round(exp(coef_table$Estimate), 3)
     coef_table
   })
