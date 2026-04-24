@@ -48,15 +48,13 @@ collaborators.
 and committed those to the GitHub repository.
 3. Sam created a shiny app file and made a basic UI design created with the
 intention of allowing the user to click check boxes next to the different
-cardiovascular variables with the goal of showing summary statistics and plots of the various
-those variables in relation to CHD prevalence.
-4. Minna added code to the server to display plots for any combination of variables.
+cardiovascular variables. 
+4. Minna added code to the server that dynamically displays plots for any combination of variables.
 5. Richard added code to the server and UI to calculate and display summary statistics,
 CHD/non-CHD comparisons, and regression model.
 6. Minna made some UI changes to the summary statistics. 
 7. Sam added variable descriptions, app description, and changed the way the
 family history graph displays.
+8. Sam deployed the app. 
 
-# Summary of Results
 
-# Concluding/Additional Remarks and Notes
