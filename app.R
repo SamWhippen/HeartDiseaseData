@@ -59,9 +59,6 @@ ui <- fluidPage(
            distributions, summary statistics, and model based effects across 
            CHD status."),
 
-  titlePanel("Interactive Analysis of Cardiovascular Risk Factors and Coronary 
-             Heart Disease"),
-  
   sidebarLayout(
     sidebarPanel(
       width = 3,
