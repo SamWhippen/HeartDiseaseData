@@ -93,12 +93,16 @@ ui <- fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("Plot",
+                 uiOutput("plot_description"),
                  card(uiOutput("plot_facet"))),
         tabPanel("Summary Stats",
+                 uiOutput("summary_description"),
                  card(tableOutput("summary_stats"))),
         tabPanel("CHD Comparison",
+                 uiOutput("chd_description"),
                  card(tableOutput("chd_compare"))),
-        tabPanel("Regression Model",
+        tabPanel("Logistic Regression",
+                 uiOutput("regression_description"),
                  card(tableOutput("regression")))
       )          
     )        
@@ -106,16 +110,79 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-  #regression model
+  #logistic regression model
   model <- reactive({
-    
     req(input$variables)
     
-    glm(chd ~ age + tobacco + ldl + obesity,
-        data = heart,
+    glm(chd ~ ., data = heart %>% select(chd, all_of(input$variables)),
         family = binomial)
-    
   })
+  
+  #plot tab description
+  output$plot_description <- renderUI({
+    req(input$variables)
+    selected_labels <- names(var_choices)[var_choices %in% input$variables]
+    var_list <- paste(selected_labels, collapse = ", ")
+    is_famhist <- "famhist" %in% input$variables
+    chart_types <- if (is_famhist && length(input$variables) > 1) {
+      "boxplots for continuous variables and a proportional bar chart for Family 
+      History of CHD"
+    } else if (is_famhist) {
+      "a proportional bar chart"
+    } else {
+      "boxplots"
+    }
+    helpText(paste0(
+      "The plot(s) below display(s) ", chart_types, " comparing the distribution of ",
+      var_list, " between individuals with and without CHD. ",
+      "Green represents No CHD and red represents CHD. ",
+      "Each panel corresponds to one selected variable, with the y-axis scaled ",
+      "independently to best display each variable's distribution."
+    ))
+  })
+  
+  #summary stats tab description
+  output$summary_description <- renderUI({
+    req(input$variables)
+    selected_labels <- names(var_choices)[var_choices %in% input$variables]
+    var_list <- paste(selected_labels, collapse = ", ")
+    helpText(paste0(
+      "The table below displays summary statistics for the following selected ",
+      "variables: ", var_list, ". ",
+      "For each variable, the mean, standard deviation, minimum, and maximum ",
+      "are reported across all individuals in the dataset, regardless of CHD status."
+    ))
+  })
+  
+  #chd comparison tab description
+  output$chd_description <- renderUI({
+    req(input$variables)
+    selected_labels <- names(var_choices)[var_choices %in% input$variables]
+    var_list <- paste(selected_labels, collapse = ", ")
+    helpText(paste0(
+      "The table below compares the average values of ", var_list,
+      " between individuals with and without CHD. ",
+      "Higher or lower averages between groups may suggest an association ",
+      "between that variable and CHD status."
+    ))
+  })
+  
+  #logistic regression tab description
+  output$regression_description <- renderUI({
+    req(input$variables)
+    selected_labels <- names(var_choices)[var_choices %in% input$variables]
+    var_list <- paste(selected_labels, collapse = ", ")
+    helpText(paste0(
+      "The table below displays the results of a logistic regression model ",
+      "predicting CHD status using the following variables: ", var_list, ". ",
+      "The Estimate column shows the log-odds coefficient for each predictor. ",
+      "The Odds Ratio indicates how much the odds of having CHD change for a ",
+      "one unit increase in that variable. ",
+      "Variables with a p-value below 0.05 are considered statistically ",
+      "significant predictors of CHD."
+    ))
+  })
+  
   
   #making the faceted plot window height dynamic according to selected variables
   output$plot_facet <- renderUI({
@@ -191,7 +258,7 @@ server <- function(input, output) {
       select(all_of(input$variables))
     
     data.frame(
-      Variable = names(data),
+      Variable = names(var_choices)[match(names(data), var_choices)],
       Mean = sapply(data, mean, na.rm = TRUE),
       SD = sapply(data, sd, na.rm = TRUE),
       Min = sapply(data, min, na.rm = TRUE),
@@ -203,14 +270,19 @@ server <- function(input, output) {
   output$chd_compare <- renderTable({
     req(input$variables)
     
-    heart %>%
+    chd_result <- heart %>%
       group_by(chd) %>%
       summarise(across(all_of(input$variables),
                        ~ round(mean(.x, na.rm = TRUE), 2))) %>%
       ungroup()
+    
+    colnames(chd_result)[-1] <- names(var_choices)[match(colnames(chd_result)[-1], var_choices)]
+    colnames(chd_result)[1] <- "CHD Status"
+    
+    chd_result
   })
 
-  #regression
+  #logistic regression
   output$regression <- renderTable({
     req(input$variables)
     m <- summary(model())
@@ -224,7 +296,15 @@ server <- function(input, output) {
     coef_table <- coef_table[, c("Variable", "Estimate", "Std Error", "z value", 
                                  "p value")]
     coef_table$Odds_Ratio <- round(exp(coef_table$Estimate), 3)
+    
+    name_map <- c(setNames(names(var_choices), var_choices), "(Intercept)" = 
+                    "(Intercept)")
+    coef_table$Variable <- ifelse(coef_table$Variable %in% names(name_map),
+                                  name_map[coef_table$Variable],
+                                  coef_table$Variable)
+    
     coef_table
+    
   })
 }
 
